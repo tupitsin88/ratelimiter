@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis:7
+    image: redis:7.4
     ports:
       - "${REDIS_PORT:-6379}:6379"
     healthcheck:
@@ -8,3 +8,66 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+
+  loadtest:
+    build:
+      context: .
+      dockerfile: cmd/loadtest/Dockerfile
+    # Per-key bucket: rate 50/s, capacity 500. Steady 5 rps/key is always allowed;
+    # a burst on a single key exhausts that key's bucket and produces denials.
+    command:
+      [
+        "-mode", "tiered",
+        "-batch", "100",
+        "-redis", "redis:6379",
+        "-addr", ":8080",
+        "-admin", ":6060",
+        "-rate", "50",
+        "-capacity", "500"
+      ]
+    ports:
+      - "${LOADTEST_PORT:-8080}:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    # Keyless probe on the measured port: also keeps a visible `unlimited` series.
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "${PROM_PORT:-9090}:9090"
+    depends_on:
+      loadtest:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    environment:
+      # Dev-only convenience: view the dashboard without login.
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12

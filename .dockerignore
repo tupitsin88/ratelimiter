@@ -1,0 +1,7 @@
+.git
+.gitignore
+.claude
+results/
+monitoring/
+docker-compose.yml
+*.md
