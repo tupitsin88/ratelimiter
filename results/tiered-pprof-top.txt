@@ -1,0 +1,23 @@
+File: loadtest
+Type: cpu
+Time: 2026-07-05 13:49:12 MSK
+Duration: 15.11s, Total samples = 3270ms (21.64%)
+Showing nodes accounting for 2940ms, 89.91% of 3270ms total
+Dropped 21 nodes (cum <= 16.35ms)
+Showing top 15 nodes out of 46
+      flat  flat%   sum%        cum   cum%
+         0     0%     0%     1580ms 48.32%  runtime.findRunnable
+         0     0%     0%     1580ms 48.32%  runtime.mcall
+         0     0%     0%     1580ms 48.32%  runtime.park_m
+         0     0%     0%     1580ms 48.32%  runtime.schedule
+    1300ms 39.76% 39.76%     1300ms 39.76%  runtime.kevent
+         0     0% 39.76%     1210ms 37.00%  runtime.netpoll
+         0     0% 39.76%      940ms 28.75%  net/http.(*conn).serve
+         0     0% 39.76%      900ms 27.52%  internal/poll.ignoringEINTRIO (inline)
+     900ms 27.52% 67.28%      900ms 27.52%  syscall.syscall
+         0     0% 67.28%      750ms 22.94%  runtime.systemstack
+         0     0% 67.28%      740ms 22.63%  runtime.notewakeup
+     740ms 22.63% 89.91%      740ms 22.63%  runtime.pthread_cond_signal
+         0     0% 89.91%      740ms 22.63%  runtime.semawakeup
+         0     0% 89.91%      620ms 18.96%  runtime.newproc.func1
+         0     0% 89.91%      620ms 18.96%  runtime.startm
