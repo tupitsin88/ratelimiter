@@ -38,7 +38,6 @@ else                               -- not first time, refill tokens
     tokens = math.min(capacity, tokens + (elapsed * rate / 1000000))
 end
 
-
 local allowed = 0
 if tokens >= cost then
     tokens = tokens - cost

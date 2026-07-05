@@ -21,7 +21,6 @@ type RedisLimiter struct {
 	failOpen bool    // behavior when Redis is unavailable
 }
 
-
 func NewRedisLimiter(rdb redis.Scripter, rate float64, capacity float64, failOpen bool) *RedisLimiter {
 	return &RedisLimiter{
 		rdb:      rdb,

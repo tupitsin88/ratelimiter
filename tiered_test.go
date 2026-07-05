@@ -90,10 +90,10 @@ func TestTieredGlobalCeiling(t *testing.T) {
 	t.Cleanup(func() { rdb.Close() })
 
 	const (
-		rate      = 1.0
-		capacity  = 100
-		batchSize = 10
-		workers   = 50
+		rate        = 1.0
+		capacity    = 100
+		batchSize   = 10
+		workers     = 50
 		perWorker   = 100
 		refillSlack = 5
 	)
